@@ -1004,8 +1004,22 @@ function recentAccuracy() {
   return Math.round((state.history.filter(Boolean).length / state.history.length) * 100);
 }
 
+const buttonOrderByCardId = new Map();
+
 function renderButtons(card) {
-  const options = resolveOptions(card);
+  let options = buttonOrderByCardId.get(card.id);
+
+  if (!options) {
+    options = resolveOptions(card);
+
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+
+    buttonOrderByCardId.set(card.id, options);
+  }
+
   const isMobile = window.matchMedia("(max-width: 780px)").matches;
   els.buttons.style.gridTemplateColumns = isMobile
     ? "1fr"
