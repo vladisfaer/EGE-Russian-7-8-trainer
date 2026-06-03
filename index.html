@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ЕГЭ Русский — Предложно-падежное управление</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0a0a0a;
+      --panel: rgba(255,255,255,.06);
+      --panel2: rgba(255,255,255,.08);
+      --border: rgba(255,255,255,.12);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.7);
+      --muted2: rgba(255,255,255,.5);
+      --good: rgba(16,185,129,.22);
+      --goodText: #b8f3d6;
+      --bad: rgba(239,68,68,.22);
+      --badText: #fecaca;
+      --warn: rgba(234,179,8,.24);
+      --warnText: #fef08a;
+      --shadow: 0 24px 60px rgba(0,0,0,.32);
+      --radius: 28px;
+    }
+    * { box-sizing: border-box; }
+    *:focus { outline: none; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: radial-gradient(1200px 1200px at 50% -100px, rgba(255,255,255,.06), transparent 55%), var(--bg);
+      color: var(--text);
+      font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    button, input { font: inherit; }
+    .app {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 16px;
+    }
+    .shell {
+      width: min(920px, 100%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .header, .panel, .footer {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .header {
+      padding: 16px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .title {
+      font-size: clamp(24px, 3vw, 34px);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+    .subtitle {
+      margin-top: 4px;
+      color: var(--muted);
+    }
+    .stats {
+      text-align: right;
+      color: var(--muted);
+      flex: 0 0 auto;
+    }
+    .stats strong { display: block; color: var(--text); font-size: 28px; line-height: 1.1; }
+    .grid4 {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .statcard {
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 18px;
+      padding: 10px 12px;
+      min-height: 64px;
+    }
+    .statcard .label { color: var(--muted2); font-size: 13px; }
+    .statcard .value { margin-top: 4px; font-size: 18px; font-weight: 700; }
+    .panel {
+      padding: 18px;
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.04));
+    }
+    .cardbox {
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+    }
+    .cardlabel {
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: .35em;
+      font-size: 12px;
+    }
+    .cardtext {
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(30px, 4.2vw, 56px);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.08;
+      padding: 0 8px;
+      overflow-wrap: anywhere;
+    }
+    .hint {
+      min-height: 48px;
+      color: var(--muted2);
+      text-align: center;
+    }
+    .feedback-wrap {
+      min-height: 72px;
+      width: 100%;
+    }
+    .feedback {
+      min-height: 72px;
+      width: 100%;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .feedback.good { background: var(--good); color: var(--goodText); }
+    .feedback.bad { background: var(--bad); color: var(--badText); }
+    .feedback.warn { background: var(--warn); color: var(--warnText); }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .btn {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--text);
+      border-radius: 18px;
+      padding: 16px 14px;
+      font-weight: 800;
+      font-size: 18px;
+      cursor: pointer;
+      transition: transform .08s ease, background .18s ease, border-color .18s ease, opacity .18s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(.99); }
+    .btn:hover { background: rgba(255,255,255,.12); }
+    .btn.good {
+      background: rgba(16,185,129,.22);
+      border-color: rgba(52,211,153,.55);
+      color: #d1fae5;
+    }
+    .btn.bad {
+      background: rgba(239,68,68,.22);
+      border-color: rgba(248,113,113,.55);
+      color: #fee2e2;
+    }
+    .btn.warn {
+      background: rgba(234,179,8,.24);
+      border-color: rgba(253,224,71,.6);
+      color: #fef9c3;
+    }
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 12px;
+      align-items: center;
+    }
+    .footer .actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .smallbtn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .smalltext { color: var(--muted); }
+    input[type=file] { display: none; }
+    @media (max-width: 780px) {
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .buttons { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; align-items: stretch; }
+      .footer .actions { justify-content: stretch; }
+      .smallbtn { width: 100%; }
+      .header-top { flex-direction: column; }
+      .stats { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="shell">
+      <section class="header">
+        <div class="header-top">
+          <div>
+            <div id="title" class="title">Тренировка</div>
+            <div id="subtitle" class="subtitle">Выбирай правильное управление. Первый тап раскрывает ответ, второй — переключает карточку.</div>
+          </div>
+          <div class="stats">
+            <div>Последние 100</div>
+            <strong id="recentAccuracy">—</strong>
+          </div>
+        </div>
+        <div class="grid4">
+          <div class="statcard"><div class="label">Фаза</div><div id="phaseValue" class="value">обучение</div></div>
+          <div class="statcard"><div class="label">Множитель</div><div id="weightValue" class="value">2x</div></div>
+          <div class="statcard"><div class="label">Финальный тест</div><div id="finalTotalValue" class="value">0</div></div>
+          <div class="statcard"><div class="label">Правильно</div><div id="finalAccuracyValue" class="value">—</div></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="cardbox">
+          <div class="cardlabel">Карточка</div>
+          <div id="cardText" class="cardtext">—</div>
+          <div id="hintText" class="hint">Выбирай правильное управление. Первый тап раскрывает ответ, второй — переключает карточку.</div>
+          <div class="feedback-wrap">
+            <div id="feedback" class="feedback" style="display:none;"></div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="btn" data-answer="слитно">слитно</button>
+          <button class="btn" data-answer="раздельно">раздельно</button>
+          <button class="btn" data-answer="дефис">дефис</button>
+        </div>
+      </section>
+
+      <section class="footer">
+        <div class="actions">
+          <button id="saveBtn" class="smallbtn">Сохранить</button>
+          <button id="loadBtn" class="smallbtn">Загрузить</button>
+          <button id="resetBtn" class="smallbtn">Сбросить</button>
+        </div>
+        <div id="cardCount" class="smalltext">Карточек: 0</div>
+      </section>
+
+      <input id="fileInput" type="file" accept="application/json" />
+    </div>
+  </div>
+
+  <script>
+
+const DEFAULT_CONFIG = {
+  "answerSets": [
+    {
+      "id": "spelling",
+      "label": "Орфография",
+      "options": [
+        "слитно",
+        "раздельно",
+        "дефис"
+      ]
+    },
+    {
+      "id": "yesno",
+      "label": "Да / нет",
+      "options": [
+        "да",
+        "нет"
+      ]
+    },
+    {
+      "id": "vowels_ao",
+      "label": "Гласные а / о",
+      "options": [
+        "а",
+        "о"
+      ]
+    },
+    {
+      "id": "vowels_ei",
+      "label": "Гласные е / и",
+      "options": [
+        "е",
+        "и"
+      ]
+    },
+    {
+      "id": "vowels_ey",
+      "label": "Гласные е / я",
+      "options": [
+        "е",
+        "я"
+      ]
+    },
+    {
+      "id": "vowels_yo",
+      "label": "Гласные ё / е",
+      "options": [
+        "ё",
+        "е"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": 1,
+      "taskText": "заведующий ___",
+      "taskTextWithAnswer": "заведующий ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "ЧЕГО?"
+      ],
+      "startMultiplier": 1
+    },
+    {
+      "id": 2,
+      "taskText": "командующий ___",
+      "taskTextWithAnswer": "командующий ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "ЧЕГО?"
+      ],
+      "startMultiplier": 1
+    },
+    {
+      "id": 3,
+      "taskText": "оплатить ___",
+      "taskTextWithAnswer": "оплатить ЧТО?",
+      "answer": "ЧТО?",
+      "options": [
+        "ЧТО?",
+        "ЗА ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 4,
+      "taskText": "уделять внимание ___",
+      "taskTextWithAnswer": "уделять внимание ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "НА ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 5,
+      "taskText": "превосходство ___",
+      "taskTextWithAnswer": "превосходство НАД КЕМ?",
+      "answer": "НАД КЕМ?",
+      "options": [
+        "НАД КЕМ?",
+        "ПЕРЕД КЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 6,
+      "taskText": "преимущество ___",
+      "taskTextWithAnswer": "преимущество ПЕРЕД КЕМ?",
+      "answer": "ПЕРЕД КЕМ?",
+      "options": [
+        "ПЕРЕД КЕМ?",
+        "НАД КЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 7,
+      "taskText": "препятствовать ___",
+      "taskTextWithAnswer": "препятствовать ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 8,
+      "taskText": "различать ___",
+      "taskTextWithAnswer": "различать ЧТО И ЧТО?",
+      "answer": "ЧТО И ЧТО?",
+      "options": [
+        "ЧТО И ЧТО?",
+        "ЧТО ОТ ЧЕГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 9,
+      "taskText": "отличать ___",
+      "taskTextWithAnswer": "отличать ЧТО ОТ ЧЕГО?",
+      "answer": "ЧТО ОТ ЧЕГО?",
+      "options": [
+        "ЧТО ОТ ЧЕГО?",
+        "ЧТО И ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 10,
+      "taskText": "уверенность ___",
+      "taskTextWithAnswer": "уверенность В ЧЕМ?",
+      "answer": "В ЧЕМ?",
+      "options": [
+        "В ЧЕМ?",
+        "ВО ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 11,
+      "taskText": "удивляться ___",
+      "taskTextWithAnswer": "удивляться ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 12,
+      "taskText": "удивлен ___",
+      "taskTextWithAnswer": "удивлен ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 13,
+      "taskText": "характерный ___",
+      "taskTextWithAnswer": "характерный ДЛЯ КОГО? ЧЕГО?",
+      "answer": "ДЛЯ КОГО? ЧЕГО?",
+      "options": [
+        "ДЛЯ КОГО? ЧЕГО?",
+        "КОМУ? ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 14,
+      "taskText": "типично ___",
+      "taskTextWithAnswer": "типично ДЛЯ КОГО?",
+      "answer": "ДЛЯ КОГО?",
+      "options": [
+        "ДЛЯ КОГО?",
+        "КОМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 15,
+      "taskText": "свойственный ___",
+      "taskTextWithAnswer": "свойственный КОМУ?",
+      "answer": "КОМУ?",
+      "options": [
+        "КОМУ?",
+        "ДЛЯ КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 16,
+      "taskText": "удостоен ___",
+      "taskTextWithAnswer": "удостоен ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 17,
+      "taskText": "рассуждать ___",
+      "taskTextWithAnswer": "рассуждать О ЧЕМ?",
+      "answer": "О ЧЕМ?",
+      "options": [
+        "О ЧЕМ?",
+        "НАД ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 18,
+      "taskText": "обсуждать ___",
+      "taskTextWithAnswer": "обсуждать ЧТО?",
+      "answer": "ЧТО?",
+      "options": [
+        "ЧТО?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 19,
+      "taskText": "описывать ___",
+      "taskTextWithAnswer": "описывать ЧТО?",
+      "answer": "ЧТО?",
+      "options": [
+        "ЧТО?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 20,
+      "taskText": "разъяснение ___",
+      "taskTextWithAnswer": "разъяснение ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 21,
+      "taskText": "интересоваться ___",
+      "taskTextWithAnswer": "интересоваться ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 22,
+      "taskText": "заверить ___",
+      "taskTextWithAnswer": "заверить В ЧЕМ?",
+      "answer": "В ЧЕМ?",
+      "options": [
+        "В ЧЕМ?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 23,
+      "taskText": "указывать ___",
+      "taskTextWithAnswer": "указывать НА ЧТО?",
+      "answer": "НА ЧТО?",
+      "options": [
+        "НА ЧТО?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 24,
+      "taskText": "поняли ___",
+      "taskTextWithAnswer": "поняли ЧТО?",
+      "answer": "ЧТО?",
+      "options": [
+        "ЧТО?",
+        "О ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 25,
+      "taskText": "заявить ___",
+      "taskTextWithAnswer": "заявить О ЧЕМ?",
+      "answer": "О ЧЕМ?",
+      "options": [
+        "О ЧЕМ?",
+        "ПРО ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 26,
+      "taskText": "поощрять ___",
+      "taskTextWithAnswer": "поощрять ЧТО?",
+      "answer": "ЧТО?",
+      "options": [
+        "ЧТО?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 27,
+      "taskText": "известно ___",
+      "taskTextWithAnswer": "известно КОМУ?",
+      "answer": "КОМУ?",
+      "options": [
+        "КОМУ?",
+        "ДЛЯ КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 28,
+      "taskText": "знакомый ___",
+      "taskTextWithAnswer": "знакомый КОМУ?",
+      "answer": "КОМУ?",
+      "options": [
+        "КОМУ?",
+        "ДЛЯ КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 29,
+      "taskText": "привычный ___",
+      "taskTextWithAnswer": "привычный ДЛЯ КОГО?",
+      "answer": "ДЛЯ КОГО?",
+      "options": [
+        "ДЛЯ КОГО?",
+        "КОМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 30,
+      "taskText": "способствовать ___",
+      "taskTextWithAnswer": "способствовать ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "ДЛЯ ЧЕГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 31,
+      "taskText": "сожалеть ___",
+      "taskTextWithAnswer": "сожалеть О ЧЕМ?",
+      "answer": "О ЧЕМ?",
+      "options": [
+        "О ЧЕМ?",
+        "ПРО ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 32,
+      "taskText": "возможность ___",
+      "taskTextWithAnswer": "возможность ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "В ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 33,
+      "taskText": "уязвимый ___",
+      "taskTextWithAnswer": "уязвимый ДЛЯ ЧЕГО?",
+      "answer": "ДЛЯ ЧЕГО?",
+      "options": [
+        "ДЛЯ ЧЕГО?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 34,
+      "taskText": "адаптировать(ся) ___",
+      "taskTextWithAnswer": "адаптировать(ся) К ЧЕМУ?",
+      "answer": "К ЧЕМУ?",
+      "options": [
+        "К ЧЕМУ?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 35,
+      "taskText": "благодарный ___",
+      "taskTextWithAnswer": "благодарный ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 36,
+      "taskText": "восхищаться ___",
+      "taskTextWithAnswer": "восхищаться ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 37,
+      "taskText": "волноваться ___",
+      "taskTextWithAnswer": "волноваться О ЧЕМ?",
+      "answer": "О ЧЕМ?",
+      "options": [
+        "О ЧЕМ?",
+        "ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 38,
+      "taskText": "присуще ___",
+      "taskTextWithAnswer": "присуще КОМУ?",
+      "answer": "КОМУ?",
+      "options": [
+        "КОМУ?",
+        "ДЛЯ КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 39,
+      "taskText": "жаждать ___",
+      "taskTextWithAnswer": "жаждать ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "ЧТО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 40,
+      "taskText": "гармонировать ___",
+      "taskTextWithAnswer": "гармонировать С ЧЕМ?",
+      "answer": "С ЧЕМ?",
+      "options": [
+        "С ЧЕМ?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 41,
+      "taskText": "гордиться ___",
+      "taskTextWithAnswer": "гордиться ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 42,
+      "taskText": "идентичен ___",
+      "taskTextWithAnswer": "идентичен ЧЕМУ?",
+      "answer": "ЧЕМУ?",
+      "options": [
+        "ЧЕМУ?",
+        "ЧЕГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 43,
+      "taskText": "проявлять заботу ___",
+      "taskTextWithAnswer": "проявлять заботу О КОМ?",
+      "answer": "О КОМ?",
+      "options": [
+        "О КОМ?",
+        "К КОМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 44,
+      "taskText": "войти в доверие ___",
+      "taskTextWithAnswer": "войти в доверие К КОМУ?",
+      "answer": "К КОМУ?",
+      "options": [
+        "К КОМУ?",
+        "КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 45,
+      "taskText": "ответственность ___",
+      "taskTextWithAnswer": "ответственность ЗА КОГО?",
+      "answer": "ЗА КОГО?",
+      "options": [
+        "ЗА КОГО?",
+        "НАД КЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 46,
+      "taskText": "облокотиться ___",
+      "taskTextWithAnswer": "облокотиться НА ЧТО?",
+      "answer": "НА ЧТО?",
+      "options": [
+        "НА ЧТО?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 47,
+      "taskText": "соотноситься ___",
+      "taskTextWithAnswer": "соотноситься С ЧЕМ?",
+      "answer": "С ЧЕМ?",
+      "options": [
+        "С ЧЕМ?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 48,
+      "taskText": "последствия ___",
+      "taskTextWithAnswer": "последствия ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "ПОСЛЕ ЧЕГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 49,
+      "taskText": "безразличный ___",
+      "taskTextWithAnswer": "безразличный К ЧЕМУ?",
+      "answer": "К ЧЕМУ?",
+      "options": [
+        "К ЧЕМУ?",
+        "НА КОГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 50,
+      "taskText": "в поисках ___",
+      "taskTextWithAnswer": "в поисках ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "ЗА ЧЕМ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 51,
+      "taskText": "путеводитель ___",
+      "taskTextWithAnswer": "путеводитель ПО ЧЕМУ?",
+      "answer": "ПО ЧЕМУ?",
+      "options": [
+        "ПО ЧЕМУ?",
+        "ЧЕГО?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 52,
+      "taskText": "пренебрежение ___",
+      "taskTextWithAnswer": "пренебрежение ЧЕМ?",
+      "answer": "ЧЕМ?",
+      "options": [
+        "ЧЕМ?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    },
+    {
+      "id": 53,
+      "taskText": "предпосылка ___",
+      "taskTextWithAnswer": "предпосылка ЧЕГО?",
+      "answer": "ЧЕГО?",
+      "options": [
+        "ЧЕГО?",
+        "К ЧЕМУ?"
+      ],
+      "startMultiplier": 2
+    }
+  ]
+};
+
+const STORAGE_KEY = "ege-russian-universal-local-html-v2";
+const ANSWER_SET_BY_ID = new Map(DEFAULT_CONFIG.answerSets.map((set) => [set.id, set]));
+
+const normalize = (value) => String(value ?? "").replace(/\s+/g, " ").trim();
+const clampWeight = (value) => Math.max(0, Math.round(Number(value) || 0));
+
+function getPresetOptions(setId) {
+  const preset = ANSWER_SET_BY_ID.get(setId);
+  return Array.isArray(preset?.options) ? [...preset.options] : [];
+}
+
+function resolveOptions(card) {
+  if (Array.isArray(card.options) && card.options.length) return [...card.options];
+  if (card.optionsSetId) return getPresetOptions(card.optionsSetId);
+  if (card.answerSetId) return getPresetOptions(card.answerSetId);
+  return getPresetOptions(DEFAULT_CONFIG.answerSets[0]?.id);
+}
+
+function getTaskText(card) {
+  return normalize(card.taskText);
+}
+
+function getTaskTextWithAnswer(card) {
+  return normalize(card.taskTextWithAnswer || card.taskText);
+}
+
+function createInitialCards() {
+  return DEFAULT_CONFIG.cards.map((card) => ({
+    ...card,
+    weight: clampWeight(card.startMultiplier ?? 1),
+  }));
+}
+
+function chooseWeightedCard(cards, excludeId) {
+  const pool = excludeId === undefined ? cards : cards.filter((card) => card.id !== excludeId);
+  const usable = pool.some((card) => card.weight > 0) ? pool : cards;
+  const total = usable.reduce((sum, card) => sum + Math.max(0, card.weight), 0);
+  if (total <= 0) return usable[Math.floor(Math.random() * usable.length)]?.id ?? cards[0].id;
+  let roll = Math.random() * total;
+  for (const card of usable) {
+    roll -= Math.max(0, card.weight);
+    if (roll <= 0) return card.id;
+  }
+  return usable[usable.length - 1].id;
+}
+
+function allZero(cards) {
+  return cards.every((card) => card.weight <= 0);
+}
+
+function createFreshState() {
+  const cards = createInitialCards();
+  return {
+    cards,
+    currentCardId: chooseWeightedCard(cards),
+    revealedChoice: null,
+    phase: "training",
+    history: [],
+    finalCorrect: 0,
+    finalTotal: 0,
+    finalAccuracy: null,
+  };
+}
+
+let state = createFreshState();
+
+const els = {
+  title: document.getElementById("title"),
+  subtitle: document.getElementById("subtitle"),
+  recentAccuracy: document.getElementById("recentAccuracy"),
+  phaseValue: document.getElementById("phaseValue"),
+  weightValue: document.getElementById("weightValue"),
+  finalTotalValue: document.getElementById("finalTotalValue"),
+  finalAccuracyValue: document.getElementById("finalAccuracyValue"),
+  cardText: document.getElementById("cardText"),
+  hintText: document.getElementById("hintText"),
+  feedback: document.getElementById("feedback"),
+  cardCount: document.getElementById("cardCount"),
+  saveBtn: document.getElementById("saveBtn"),
+  loadBtn: document.getElementById("loadBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  fileInput: document.getElementById("fileInput"),
+  buttons: document.querySelector(".buttons"),
+};
+
+function currentCard() {
+  return state.cards.find((card) => card.id === state.currentCardId) ?? state.cards[0];
+}
+
+function recentAccuracy() {
+  if (!state.history.length) return null;
+  return Math.round((state.history.filter(Boolean).length / state.history.length) * 100);
+}
+
+function renderButtons(card) {
+  const options = resolveOptions(card);
+  const isMobile = window.matchMedia("(max-width: 780px)").matches;
+  els.buttons.style.gridTemplateColumns = isMobile
+    ? "1fr"
+    : `repeat(${Math.max(1, options.length)}, minmax(0, 1fr))`;
+  els.buttons.innerHTML = "";
+
+  options.forEach((choice) => {
+    const btn = document.createElement("button");
+    btn.className = "btn";
+    btn.type = "button";
+    btn.dataset.answer = choice;
+    btn.textContent = choice;
+
+    if (state.revealedChoice) {
+      const chosen = state.revealedChoice === choice;
+      const correct = card.answer === choice;
+      if (chosen && correct) btn.classList.add("good");
+      else if (chosen && !correct) btn.classList.add("bad");
+      else if (correct) btn.classList.add("warn");
+    }
+
+    btn.addEventListener("click", () => handleChoice(choice));
+    els.buttons.appendChild(btn);
+  });
+}
+
+function updateUI() {
+  const card = currentCard();
+  const revealed = Boolean(state.revealedChoice);
+  const title = state.phase === "training" ? "Тренировка" : state.phase === "final" ? "Финальный тест" : "Победа";
+  const subtitle = state.phase === "training"
+    ? "Выбирай правильное управление. Первый тап раскрывает ответ, второй — переключает карточку."
+    : state.phase === "final"
+    ? "Множители больше не растут. Доведи всё до нуля."
+    : `Финальный тест: ${state.finalAccuracy ?? 0}%`;
+
+  els.title.textContent = title;
+  els.subtitle.textContent = subtitle;
+  els.recentAccuracy.textContent = recentAccuracy() === null ? "—" : `${recentAccuracy()}%`;
+  els.phaseValue.textContent = state.phase === "training" ? "обучение" : state.phase === "final" ? "финал" : "победа";
+  els.weightValue.textContent = state.phase === "victory" ? "0x" : `${Math.round(card?.weight ?? 0)}x`;
+  els.finalTotalValue.textContent = String(state.finalTotal);
+  els.finalAccuracyValue.textContent = state.finalTotal === 0 ? "—" : `${Math.round((state.finalCorrect / state.finalTotal) * 100)}%`;
+  els.cardCount.textContent = `Карточек: ${state.cards.length}`;
+  els.cardText.textContent = revealed ? getTaskTextWithAnswer(card) : getTaskText(card);
+  els.hintText.textContent = "Выбирай правильное управление. Первый тап раскрывает ответ, второй — переключает карточку.";
+
+  if (revealed) {
+    els.feedback.style.display = "flex";
+    const correct = state.revealedChoice === card.answer;
+    els.feedback.className = `feedback ${correct ? "good" : "bad"}`;
+    els.feedback.textContent = correct ? "Верно" : `Неверно. Правильный ответ: ${card.answer}`;
+  } else {
+    els.feedback.style.display = "none";
+    els.feedback.textContent = "";
+  }
+
+  renderButtons(card);
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      cards: state.cards.map((card) => ({ id: card.id, weight: card.weight })),
+      currentCardId: state.currentCardId,
+      revealedChoice: state.revealedChoice,
+      phase: state.phase,
+      history: state.history,
+      finalCorrect: state.finalCorrect,
+      finalTotal: state.finalTotal,
+      finalAccuracy: state.finalAccuracy,
+    }));
+  } catch {}
+}
+
+function nextCard() {
+  state = {
+    ...state,
+    revealedChoice: null,
+    currentCardId: chooseWeightedCard(state.cards, state.currentCardId),
+  };
+  updateUI();
+}
+
+function handleChoice(choice) {
+  if (state.phase === "victory") {
+    restart();
+    return;
+  }
+
+  if (state.revealedChoice) {
+    nextCard();
+    return;
+  }
+
+  const card = currentCard();
+  const correct = choice === card.answer;
+  const updatedCards = state.cards.map((item) => {
+    if (item.id !== card.id) return item;
+    return {
+      ...item,
+      weight: clampWeight(item.weight + (correct ? -1 : 4)),
+    };
+  });
+
+  const history = [...state.history, correct].slice(-100);
+
+  if (state.phase === "training" && allZero(updatedCards)) {
+    const resetCards = updatedCards.map((item) => ({ ...item, weight: 0.5 }));
+    state = {
+      cards: resetCards,
+      currentCardId: card.id,
+      revealedChoice: choice,
+      phase: "final",
+      history,
+      finalCorrect: 0,
+      finalTotal: 0,
+      finalAccuracy: null,
+    };
+    updateUI();
+    return;
+  }
+
+  if (state.phase === "final") {
+    const finalTotal = state.finalTotal + 1;
+    const finalCorrect = state.finalCorrect + (correct ? 1 : 0);
+    if (allZero(updatedCards)) {
+      state = {
+        cards: updatedCards,
+        currentCardId: card.id,
+        revealedChoice: choice,
+        phase: "victory",
+        history,
+        finalCorrect,
+        finalTotal,
+        finalAccuracy: finalTotal ? Math.round((finalCorrect / finalTotal) * 100) : 0,
+      };
+      updateUI();
+      return;
+    }
+    state = {
+      cards: updatedCards,
+      currentCardId: card.id,
+      revealedChoice: choice,
+      phase: "final",
+      history,
+      finalCorrect,
+      finalTotal,
+      finalAccuracy: null,
+    };
+    updateUI();
+    return;
+  }
+
+  state = {
+    cards: updatedCards,
+    currentCardId: card.id,
+    revealedChoice: choice,
+    phase: "training",
+    history,
+    finalCorrect: 0,
+    finalTotal: 0,
+    finalAccuracy: null,
+  };
+  updateUI();
+}
+
+function restart() {
+  state = createFreshState();
+  updateUI();
+}
+
+function exportProgress() {
+  const blob = new Blob([JSON.stringify({
+    cards: state.cards.map((card) => ({ id: card.id, weight: card.weight })),
+    currentCardId: state.currentCardId,
+    revealedChoice: state.revealedChoice,
+    phase: state.phase,
+    history: state.history,
+    finalCorrect: state.finalCorrect,
+    finalTotal: state.finalTotal,
+    finalAccuracy: state.finalAccuracy,
+  }, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "universal-ege-trainer-progress.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function loadFromFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(String(reader.result));
+      const fresh = createFreshState();
+      const byId = new Map(fresh.cards.map((card) => [card.id, card]));
+      const restoredCards = Array.isArray(parsed.cards)
+        ? parsed.cards
+            .map((card) => {
+              const base = byId.get(Number(card.id));
+              if (!base) return null;
+              return { ...base, weight: typeof card.weight === "number" ? clampWeight(card.weight) : base.weight };
+            })
+            .filter(Boolean)
+        : fresh.cards;
+
+      const cards = (restoredCards.length === fresh.cards.length ? restoredCards : fresh.cards).map((card) => ({ ...card }));
+      const currentCardId = typeof parsed.currentCardId === "number" && cards.some((card) => card.id === parsed.currentCardId)
+        ? parsed.currentCardId
+        : chooseWeightedCard(cards);
+
+      state = {
+        cards,
+        currentCardId,
+        revealedChoice: null,
+        phase: parsed.phase === "final" || parsed.phase === "victory" ? parsed.phase : "training",
+        history: Array.isArray(parsed.history) ? parsed.history.map(Boolean).slice(-100) : [],
+        finalCorrect: typeof parsed.finalCorrect === "number" ? parsed.finalCorrect : 0,
+        finalTotal: typeof parsed.finalTotal === "number" ? parsed.finalTotal : 0,
+        finalAccuracy: typeof parsed.finalAccuracy === "number" ? parsed.finalAccuracy : null,
+      };
+      updateUI();
+    } catch {
+      alert("Файл прогресса не распознан.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+els.saveBtn.addEventListener("click", exportProgress);
+els.loadBtn.addEventListener("click", () => els.fileInput.click());
+els.resetBtn.addEventListener("click", restart);
+els.fileInput.addEventListener("change", (e) => {
+  loadFromFile(e.target.files && e.target.files[0] ? e.target.files[0] : null);
+  e.target.value = "";
+});
+
+window.addEventListener("resize", () => {
+  const card = currentCard();
+  if (card) renderButtons(card);
+});
+
+try {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    const fresh = createFreshState();
+    const byId = new Map(fresh.cards.map((card) => [card.id, card]));
+    const restoredCards = Array.isArray(parsed.cards)
+      ? parsed.cards
+          .map((card) => {
+            const base = byId.get(Number(card.id));
+            if (!base) return null;
+            return { ...base, weight: typeof card.weight === "number" ? clampWeight(card.weight) : base.weight };
+          })
+          .filter(Boolean)
+      : fresh.cards;
+
+    const cards = (restoredCards.length === fresh.cards.length ? restoredCards : fresh.cards).map((card) => ({ ...card }));
+    const currentCardId = typeof parsed.currentCardId === "number" && cards.some((card) => card.id === parsed.currentCardId)
+      ? parsed.currentCardId
+      : chooseWeightedCard(cards);
+
+    state = {
+      cards,
+      currentCardId,
+      revealedChoice: null,
+      phase: parsed.phase === "final" || parsed.phase === "victory" ? parsed.phase : "training",
+      history: Array.isArray(parsed.history) ? parsed.history.map(Boolean).slice(-100) : [],
+      finalCorrect: typeof parsed.finalCorrect === "number" ? parsed.finalCorrect : 0,
+      finalTotal: typeof parsed.finalTotal === "number" ? parsed.finalTotal : 0,
+      finalAccuracy: typeof parsed.finalAccuracy === "number" ? parsed.finalAccuracy : null,
+    };
+  }
+} catch {}
+
+updateUI();
+
+  </script>
+</body>
+</html>
